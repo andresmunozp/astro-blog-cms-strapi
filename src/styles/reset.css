@@ -62,8 +62,8 @@ button {
   cursor: pointer;
 }
 
-ul,
+/* ul,
 ol {
   padding-inline-start: 0;
   list-style: none;
-}
+} */

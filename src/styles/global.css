@@ -16,22 +16,22 @@ h1 {
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 1.379rem + 0.518vw, 2rem);
   color: #dcdada;
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 1.129rem + 0.518vw, 1.75rem);
   color: #dcdada;
 }
 
 h4 {
-  font-size: 1.25rem;
+  font-size: clamp(1.125rem, 1.004rem + 0.518vw, 1.5rem);
   color: #dcdada;
 }
 
 p {
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 0.829rem + 0.196vw, 1.125rem);
   color: #dcdada;
   text-wrap: pretty;
   margin-bottom: 1lh;
