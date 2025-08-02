@@ -1,0 +1,90 @@
+---
+import fetchApi from "../lib/strapi.js";
+import type Post from "../interfaces/post.js";
+
+const posts = await fetchApi<Post[]>({
+  endpoint: "posts?populate=FeaturedImage",
+  query: {
+    sort: "createdAt:desc",
+    "pagination[limit]": "6",
+  },
+  wrappedByKey: "data",
+});
+---
+
+{
+  posts.map((post) => {
+    const { Title, Description, slug, publishedAt, FeaturedImage } = post
+    const [{ url }] = FeaturedImage
+    return (
+      <article>
+        <a href={`blog/${slug}`}>
+          <img transition:name={`img-${slug}`} src={url} alt={"Imgen del primer articulo"} />
+          <div class="content">
+            <h2>{Title}</h2>
+            <p>{Description}</p>
+            <time datetime={publishedAt}>
+              {new Date(publishedAt).toLocaleDateString()}
+            </time>
+          </div>
+        </a>
+      </article>
+    );
+  })
+}
+
+<style>
+  article {
+    border-radius: 8px;
+    background-color: rgba(42, 42, 42, 0.3);
+    transition: transform 0.2s;
+  }
+
+  a {
+    text-decoration: none;
+    display: block;
+  }
+
+  .grid-article {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+
+  article:hover {
+    transform: scale(1.02);
+    transition: ease-in-out 0.2s;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+  }
+
+  time {
+    display: block;
+    margin-top: 8px;
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  .content {
+    padding: 0 16px 16px 16px;
+  }
+
+  .content p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+</style>

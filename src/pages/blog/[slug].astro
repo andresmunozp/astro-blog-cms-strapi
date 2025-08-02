@@ -1,0 +1,177 @@
+---
+export const prerender = false;
+
+import { marked } from "marked";
+import type Post from "../../interfaces/post";
+import Layout from "../../layouts/Layout.astro";
+import fetchApi from "../../lib/strapi.js";
+import { processContent } from "../../lib/utils/prepareContentForTOC";
+import Toc from "../../components/Toc.astro";
+
+const { slug } = Astro.params;
+
+const post = await fetchApi<Post>({
+  endpoint: `posts?filters[slug]=${slug}&populate=FeaturedImage`,
+  wrappedByKey: "data",
+  wrappedByList: true,
+});
+
+if (!post) {
+  return new Response(null, {
+    status: 404,
+    statusText: "Not found",
+  });
+}
+
+const { Title, Content, Description, publishedAt } = post;
+
+const content = await marked.parse(Content);
+const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(content);
+---
+
+<Layout title={Title}>
+  <div class="postHeader">
+    <div>
+      <div class="postImageContainer">
+        <h1 transition:name={`title-${slug}`}>{Title}</h1>
+        <img
+          transition:name={`img-${slug}`}
+          class="postImage"
+          src={post.FeaturedImage[0].url}
+          alt={Title}
+        />
+      </div>
+    </div>
+    <div class="description-data">
+      <p transition:name={`description-${slug}`}>{Description}</p>
+      <time datetime={publishedAt}>
+        {new Date(publishedAt).toLocaleDateString()}
+      </time>
+    </div>
+  </div>
+
+  <main>
+    <article class="content">
+      <div class="post-content" set:html={contentWithIds} />
+      <Toc extractedHeadings={extractedHeadings} />
+    </article>
+  </main>
+
+  <style>
+    /* Layout principal */
+    .content {
+      display: flex;
+      flex-direction: row;
+      line-height: 1.6;
+      color: #333;
+      margin: 0 auto;
+      max-width: 1200px;
+    }
+
+    .post-content {
+      width: 70%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Header del post */
+    .postHeader {
+      display: flex;
+      flex-direction: row;
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .postHeader h1 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      align-self: center;
+    }
+
+    .postHeader p {
+      font-size: 1.2rem;
+    }
+
+    .postHeader time {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .postImageContainer {
+      display: block;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .postImage {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 20px 0;
+      object-fit: cover;
+    }
+
+    .description-data {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 50px;
+    }
+
+
+    /* Enlaces de ancla (#) */
+    :global(.anchor-link) {
+      color: #ccc;
+      text-decoration: none;
+      margin-left: 8px;
+      font-weight: normal;
+      opacity: 0;
+      transition: opacity 0.2s ease, color 0.2s ease;
+      font-size: 0.8em;
+    }
+
+    :global(h1:hover .anchor-link),
+    :global(h2:hover .anchor-link),
+    :global(h3:hover .anchor-link),
+    :global(h4:hover .anchor-link) {
+      opacity: 1;
+    }
+
+    :global(.anchor-link:hover) {
+      color: #666;
+      text-decoration: none;
+    }
+
+    /* Navegación suave y offset */
+    :global(html) {
+      scroll-behavior: smooth;
+    }
+
+    :global(h1[id]),
+    :global(h2[id]),
+    :global(h3[id]),
+    :global(h4[id]) {
+      scroll-margin-top: 20px;
+    }
+
+    /* Imágenes en el contenido */
+    :global(main p img) {
+      max-width: 450px;
+      max-height: 450px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .post-content {
+        width: 100%;
+      }
+    }
+  </style>
+</Layout>
