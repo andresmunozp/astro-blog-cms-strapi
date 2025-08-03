@@ -27,12 +27,13 @@ const { title, content, description, publishedAt, featuredImage } = post;
 const { url, alternativeText } = featuredImage;
 
 const postContent = await marked.parse(content);
-const { processedContent: contentWithIds, headings: extractedHeadings } =
-  processContent(postContent);
+const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(postContent);
 ---
 
 <Layout title={title} description={description}>
+
   <div class="post-header">
+
     <div class="title-image-container">
       <div class="post-image-container">
         <h1 transition:name={`title-${slug}`}>{title}</h1>
@@ -46,12 +47,14 @@ const { processedContent: contentWithIds, headings: extractedHeadings } =
         />
       </div>
     </div>
+
     <div class="description-data">
       <p transition:name={`description-${slug}`}>{description}</p>
       <time datetime={publishedAt}>
         {new Date(publishedAt).toLocaleDateString()}
       </time>
     </div>
+
   </div>
 
   <main>
@@ -70,6 +73,7 @@ const { processedContent: contentWithIds, headings: extractedHeadings } =
     color: #333;
     margin: 0 auto;
     max-width: 1200px;
+    gap: 20px;
   }
 
   .post-content {
@@ -178,56 +182,3 @@ const { processedContent: contentWithIds, headings: extractedHeadings } =
     margin: 0 auto;
   }
 </style>
-
-<script>
-  function setupTOCHighlight() {
-    const tocLinks = document.querySelectorAll(".heading-link");
-    const headingElements = document.querySelectorAll(
-      "h1[id], h2[id], h3[id], h4[id]"
-    );
-    const headingMap = new Map();
-
-    // Si no hay elementos, salir
-    if (tocLinks.length === 0 || headingElements.length === 0) return;
-
-    // Mapear id → link
-    tocLinks.forEach((link) => {
-      const id = link.getAttribute("href")?.replace("#", "");
-      if (id) headingMap.set(id, link);
-    });
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const id = entry.target.getAttribute("id");
-          if (!id) return;
-
-          const link = headingMap.get(id);
-          if (!link) return;
-
-          if (entry.isIntersecting) {
-            // Quitar clase activa de todos
-            tocLinks.forEach((l) => l.classList.remove("active"));
-            // Activar el link correspondiente
-            link.classList.add("active");
-          }
-        });
-      },
-      {
-        rootMargin: "0px 0px -70% 0px", // Detecta cuando el heading entra al 20% superior
-        threshold: 0.1,
-      }
-    );
-
-    headingElements.forEach((heading) => observer.observe(heading));
-
-  // Limpiar observer cuando la página cambie
-  document.addEventListener("astro:before-preparation", () => {
-      observer.disconnect();
-    });
-  }
-  // Ejecutar en carga inicial
-  document.addEventListener("DOMContentLoaded", setupTOCHighlight);
-  // Ejecutar después de las transiciones de Astro (para navegación SPA)
-  document.addEventListener("astro:page-load", setupTOCHighlight);
-</script>

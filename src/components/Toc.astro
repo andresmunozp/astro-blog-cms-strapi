@@ -23,7 +23,6 @@ const headings = extractedHeadings.map(({ level, text, id }) => {
       position: sticky;
       top: 20px;
       height: max-content;
-      padding: 20px;
       border-radius: 8px;
       flex: 0.3 0 150px;
     }
@@ -63,3 +62,56 @@ const headings = extractedHeadings.map(({ level, text, id }) => {
       }
     }
 </style>
+
+<script>
+  function setupTOCHighlight() {
+    const tocLinks = document.querySelectorAll(".heading-link");
+    const headingElements = document.querySelectorAll(
+      "h1[id], h2[id], h3[id], h4[id]"
+    );
+    const headingMap = new Map();
+
+    // Si no hay elementos, salir
+    if (tocLinks.length === 0 || headingElements.length === 0) return;
+
+    // Mapear id → link
+    tocLinks.forEach((link) => {
+      const id = link.getAttribute("href")?.replace("#", "");
+      if (id) headingMap.set(id, link);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute("id");
+          if (!id) return;
+
+          const link = headingMap.get(id);
+          if (!link) return;
+
+          if (entry.isIntersecting) {
+            // Quitar clase activa de todos
+            tocLinks.forEach((l) => l.classList.remove("active"));
+            // Activar el link correspondiente
+            link.classList.add("active");
+          }
+        });
+      },
+      {
+        rootMargin: "0px 0px -70% 0px", // Detecta cuando el heading entra al 30% superior
+        threshold: 0.1,
+      }
+    );
+
+    headingElements.forEach((heading) => observer.observe(heading));
+
+  // Limpiar observer cuando la página cambie
+  document.addEventListener("astro:before-preparation", () => {
+      observer.disconnect();
+    });
+  }
+  // Ejecutar en carga inicial
+  document.addEventListener("DOMContentLoaded", setupTOCHighlight);
+  // Ejecutar después de las transiciones de Astro (para navegación SPA)
+  document.addEventListener("astro:page-load", setupTOCHighlight);
+</script>

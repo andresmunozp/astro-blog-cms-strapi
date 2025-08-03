@@ -16,7 +16,6 @@ const posts = await fetchApi<Post[]>({
   posts.map((post) => {
     const { title, description, slug, publishedAt, featuredImage } = post
     const { url, alternativeText } = featuredImage;
-
     return (
       <article>
         <a href={`blog/${slug}`}>
