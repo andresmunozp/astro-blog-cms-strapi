@@ -3,26 +3,27 @@ import fetchApi from "../lib/strapi.js";
 import type Post from "../interfaces/post.js";
 
 const posts = await fetchApi<Post[]>({
-  endpoint: "posts?populate=FeaturedImage",
+  endpoint: "posts?populate=featuredImage",
   query: {
     sort: "createdAt:desc",
     "pagination[limit]": "6",
   },
-  wrappedByKey: "data",
+  wrappedByKey: "data"
 });
 ---
 
 {
   posts.map((post) => {
-    const { Title, Description, slug, publishedAt, FeaturedImage } = post
-    const [{ url }] = FeaturedImage
+    const { title, description, slug, publishedAt, featuredImage } = post
+    const { url, alternativeText } = featuredImage;
+
     return (
       <article>
         <a href={`blog/${slug}`}>
-          <img transition:name={`img-${slug}`} src={url} alt={"Imgen del primer articulo"} />
+          <img transition:name={`img-${slug}`} src={url} alt={alternativeText} />
           <div class="content">
-            <h2>{Title}</h2>
-            <p>{Description}</p>
+            <h2>{title}</h2>
+            <p>{description}</p>
             <time datetime={publishedAt}>
               {new Date(publishedAt).toLocaleDateString()}
             </time>

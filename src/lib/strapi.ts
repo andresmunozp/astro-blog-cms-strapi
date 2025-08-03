@@ -1,4 +1,5 @@
-import { STRAPI_URL } from "astro:env/server";
+import { STRAPI_URL , getSecret } from "astro:env/server";
+const STRAPI_TOKEN = getSecret('STRAPI_TOKEN')
 
 const apiURL = `${STRAPI_URL}/api`;
 
@@ -34,9 +35,19 @@ export default async function fetchApi<T>({
       url.searchParams.append(key, value);
     });
   }
-  const res = await fetch(url.toString());
-  let data = await res.json();
 
+  const res = await fetch(url.toString(), {
+    headers: {
+      'Authorization': `bearer ${STRAPI_TOKEN}`
+    },
+  });
+
+  if(!res.ok) {
+    throw new Error(`Error fetching data from Strapi: ${res.status} ${res.statusText}`);
+  }
+
+  let data = await res.json();
+  
   if (wrappedByKey) {
     data = data[wrappedByKey];
   }

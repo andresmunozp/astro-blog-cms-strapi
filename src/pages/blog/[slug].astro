@@ -11,7 +11,7 @@ import Toc from "../../components/Toc.astro";
 const { slug } = Astro.params;
 
 const post = await fetchApi<Post>({
-  endpoint: `posts?filters[slug]=${slug}&populate=FeaturedImage`,
+  endpoint: `posts?filters[slug]=${slug}&populate=featuredImage`,
   wrappedByKey: "data",
   wrappedByList: true,
 });
@@ -23,29 +23,30 @@ if (!post) {
   });
 }
 
-const { Title, Content, Description, publishedAt } = post;
+const { title, content, description, publishedAt, featuredImage } = post;
+const { url, alternativeText } = featuredImage;
 
-const content = await marked.parse(Content);
-const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(content);
+const postContent = await marked.parse(content);
+const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(postContent);
 ---
 
-<Layout title={Title} description={Description}>
+<Layout title={title} description={description}>
   <div class="post-header">
     <div class="title-image-container">
       <div class="post-image-container">
-        <h1 transition:name={`title-${slug}`}>{Title}</h1>
+        <h1 transition:name={`title-${slug}`}>{title}</h1>
         <img
           width="450"
           height="300"
           transition:name={`img-${slug}`}
           class="post-image"
-          src={post.FeaturedImage[0].url}
-          alt={Title}
+          src={url}
+          alt={alternativeText}
         />
       </div>
     </div>
     <div class="description-data">
-      <p transition:name={`description-${slug}`}>{Description}</p>
+      <p transition:name={`description-${slug}`}>{description}</p>
       <time datetime={publishedAt}>
         {new Date(publishedAt).toLocaleDateString()}
       </time>
