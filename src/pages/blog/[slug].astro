@@ -27,7 +27,8 @@ const { title, content, description, publishedAt, featuredImage } = post;
 const { url, alternativeText } = featuredImage;
 
 const postContent = await marked.parse(content);
-const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(postContent);
+const { processedContent: contentWithIds, headings: extractedHeadings } =
+  processContent(postContent);
 ---
 
 <Layout title={title} description={description}>
@@ -59,121 +60,174 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
       <Toc extractedHeadings={extractedHeadings} />
     </article>
   </main>
-
-  <style>
-    /* Layout principal */
-    .content {
-      display: flex;
-      flex-direction: row;
-      line-height: 1.6;
-      color: #333;
-      margin: 0 auto;
-      max-width: 1200px;
-    }
-
-    .post-content {
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .post-content {
-      flex: 1;
-    }
-    /* Header del post */
-    .post-header {
-      display: flex;      
-      flex-direction: row;
-      max-width: 1000px;
-      margin: auto;
-      gap: 20px;
-      box-sizing: border-box;
-    }
-
-    .post-header > div {
-      flex: 1;
-    }
-
-    .post-header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 16px;
-      align-self: center;
-    }
-
-    .post-header p {
-      font-size: 1.2rem;
-    }
-
-    .post-header time {
-      font-size: 0.9rem;
-      color: #999;
-      margin-bottom: 20px;
-    }
-
-    .post-image-container {
-      display: block;
-      justify-content: center;
-      margin: 0 auto;
-    }
-
-    .post-image {
-      max-width: 100%;
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-
-    .description-data {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-
-    /* Enlaces de ancla (#) */
-    :global(.anchor-link) {
-      color: #ccc;
-      text-decoration: none;
-      margin-left: 8px;
-      font-weight: normal;
-      opacity: 0;
-      transition: opacity 0.2s ease, color 0.2s ease;
-      font-size: 0.8em;
-    }
-
-    :global(h1:hover .anchor-link),
-    :global(h2:hover .anchor-link),
-    :global(h3:hover .anchor-link),
-    :global(h4:hover .anchor-link) {
-      opacity: 1;
-    }
-
-    :global(.anchor-link:hover) {
-      color: #666;
-      text-decoration: none;
-    }
-
-    /* Navegación suave y offset */
-    :global(html) {
-      scroll-behavior: smooth;
-    }
-
-    :global(h1[id]),
-    :global(h2[id]),
-    :global(h3[id]),
-    :global(h4[id]) {
-      scroll-margin-top: 20px;
-    }
-
-    /* Imágenes en el contenido */
-    :global(main p img) {
-      max-width: 450px;
-      max-height: 450px;
-      object-fit: cover;
-      border-radius: 8px;
-      display: block;
-      margin: 0 auto;
-    }
-
-  </style>
 </Layout>
+<style>
+  /* Layout principal */
+  .content {
+    display: flex;
+    flex-direction: row;
+    line-height: 1.6;
+    color: #333;
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+
+  .post-content {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .post-content {
+    flex: 1;
+  }
+  /* Header del post */
+  .post-header {
+    display: flex;
+    flex-direction: row;
+    max-width: 1000px;
+    margin: auto;
+    gap: 20px;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+
+  .post-header > div {
+    flex: 1;
+  }
+
+  .post-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+    align-self: center;
+  }
+
+  .post-header p {
+    font-size: 1.2rem;
+  }
+
+  .post-header time {
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 20px;
+  }
+
+  .post-image-container {
+    display: block;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .post-image {
+    max-width: 350px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .description-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Enlaces de ancla (#) */
+  :global(.anchor-link) {
+    color: #ccc;
+    text-decoration: none;
+    margin-left: 8px;
+    font-weight: normal;
+    opacity: 0;
+    transition:
+      opacity 0.2s ease,
+      color 0.2s ease;
+    font-size: 0.8em;
+  }
+
+  :global(h1:hover .anchor-link),
+  :global(h2:hover .anchor-link),
+  :global(h3:hover .anchor-link),
+  :global(h4:hover .anchor-link) {
+    opacity: 1;
+  }
+
+  :global(.anchor-link:hover) {
+    color: #666;
+    text-decoration: none;
+  }
+
+  /* Navegación suave y offset */
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(h1[id]),
+  :global(h2[id]),
+  :global(h3[id]),
+  :global(h4[id]) {
+    scroll-margin-top: 20px;
+  }
+
+  /* Imágenes en el contenido */
+  :global(main p img) {
+    max-width: 450px;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+
+<script>
+  function setupTOCHighlight() {
+    const tocLinks = document.querySelectorAll(".heading-link");
+    const headingElements = document.querySelectorAll(
+      "h1[id], h2[id], h3[id], h4[id]"
+    );
+    const headingMap = new Map();
+
+    // Si no hay elementos, salir
+    if (tocLinks.length === 0 || headingElements.length === 0) return;
+
+    // Mapear id → link
+    tocLinks.forEach((link) => {
+      const id = link.getAttribute("href")?.replace("#", "");
+      if (id) headingMap.set(id, link);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute("id");
+          if (!id) return;
+
+          const link = headingMap.get(id);
+          if (!link) return;
+
+          if (entry.isIntersecting) {
+            // Quitar clase activa de todos
+            tocLinks.forEach((l) => l.classList.remove("active"));
+            // Activar el link correspondiente
+            link.classList.add("active");
+          }
+        });
+      },
+      {
+        rootMargin: "0px 0px -70% 0px", // Detecta cuando el heading entra al 20% superior
+        threshold: 0.1,
+      }
+    );
+
+    headingElements.forEach((heading) => observer.observe(heading));
+
+  // Limpiar observer cuando la página cambie
+  document.addEventListener("astro:before-preparation", () => {
+      observer.disconnect();
+    });
+  }
+  // Ejecutar en carga inicial
+  document.addEventListener("DOMContentLoaded", setupTOCHighlight);
+  // Ejecutar después de las transiciones de Astro (para navegación SPA)
+  document.addEventListener("astro:page-load", setupTOCHighlight);
+</script>
