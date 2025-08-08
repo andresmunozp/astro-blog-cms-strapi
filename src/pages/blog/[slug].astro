@@ -34,25 +34,29 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
 
   <div class="post-header">
 
-    <div class="title-image-container">
-      <div class="post-image-container">
+    <div class="title-container">
+        <a href="/">Volver</a>
         <h1 transition:name={`title-${slug}`}>{title}</h1>
+    </div>
+
+    <div class="image-description-container">
+      <div class="post-image-container">
         <img
-          width="450"
-          height="300"
+          width="550"
+          height="400"
           transition:name={`img-${slug}`}
           class="post-image"
           src={url}
           alt={alternativeText}
         />
       </div>
-    </div>
 
-    <div class="description-data">
-      <p transition:name={`description-${slug}`}>{description}</p>
-      <time datetime={publishedAt}>
-        {new Date(publishedAt).toLocaleDateString()}
-      </time>
+      <div class="description-data">
+        <p transition:name={`description-${slug}`}>{description}</p>
+        <time datetime={publishedAt}>
+          {new Date(publishedAt).toLocaleDateString()}
+        </time>
+      </div>
     </div>
 
   </div>
@@ -65,6 +69,28 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
   </main>
 </Layout>
 <style>
+
+  .title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .title-container a {
+    margin-right: 12px;
+    color: #0070f3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #0051a2;
+    }
+  }
+
+  .title-container h1 {
+    flex: 1;
+  }
+
   /* Layout principal */
   .content {
     display: flex;
@@ -79,15 +105,13 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
   .post-content {
     padding: 20px;
     box-sizing: border-box;
-  }
-
-  .post-content {
     flex: 1;
   }
+
   /* Header del post */
   .post-header {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     max-width: 1000px;
     margin: auto;
     gap: 20px;
@@ -102,7 +126,7 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
   .post-header h1 {
     font-size: 2.5rem;
     margin-bottom: 16px;
-    align-self: center;
+    text-align: center;
   }
 
   .post-header p {
@@ -115,25 +139,29 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
     margin-bottom: 20px;
   }
 
+  .image-description-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+  }
+
   .post-image-container {
     display: block;
     justify-content: center;
-    margin: 0 auto;
+    
   }
 
   .post-image {
-    max-width: 350px;
+    max-width: 550px;
     width: 100%;
     height: auto;
     border-radius: 8px;
     object-fit: cover;
   }
 
-  .description-data {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
+
 
   /* Enlaces de ancla (#) */
   :global(.anchor-link) {

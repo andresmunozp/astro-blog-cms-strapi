@@ -11,12 +11,16 @@ importers:
       '@astrojs/vercel':
         specifier: ^8.2.5
         version: 8.2.5(astro@5.12.4(@types/node@24.1.0)(rollup@4.46.1)(typescript@5.8.3))(rollup@4.46.1)
-      astro:
-        specifier: ^5.12.4
-        version: 5.12.4(@types/node@24.1.0)(rollup@4.46.1)(typescript@5.8.3)
       marked:
         specifier: ^16.1.1
         version: 16.1.1
+    devDependencies:
+      '@astrojs/compiler':
+        specifier: ^2.12.2
+        version: 2.12.2
+      astro:
+        specifier: ^5.12.4
+        version: 5.12.4(@types/node@24.1.0)(rollup@4.46.1)(typescript@5.8.3)
 
 packages:
 

@@ -34,7 +34,7 @@ p {
   font-size: clamp(0.875rem, 0.829rem + 0.196vw, 1.125rem);
   color: #dcdada;
   text-wrap: pretty;
-  margin-bottom: 1lh;
+
 }
 
 a {
@@ -49,4 +49,10 @@ li {
 
 strong {
   color: #fff;
+}
+
+.post-content p,
+.post-content ul,
+.post-content ol {
+  margin-bottom: 1lh;
 }
