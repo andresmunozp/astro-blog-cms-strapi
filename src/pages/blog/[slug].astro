@@ -108,6 +108,13 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
     flex: 1;
   }
 
+  /* Estilos para el contenido del post */
+  :isglobal(.post-content p),
+  :isglobal(.post-content ul),
+  :isglobal(.post-content ol) {
+    margin-bottom: 1lh;
+  }
+
   /* Header del post */
   .post-header {
     display: flex;
