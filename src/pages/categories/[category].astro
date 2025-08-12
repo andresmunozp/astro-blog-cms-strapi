@@ -1,36 +1,42 @@
 ---
-export const prerender = true;
+export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import fetchApi from "../../lib/strapi.js";
 import type Post from "../../interfaces/post";
+import type { Category } from "../../interfaces/post";
 import { slugify } from "../../lib/utils/slugify";
 import Cards from "../../components/Cards.astro";
 
-export async function getStaticPaths() {
-  
-  const posts = await fetchApi<Post[]>({
-    endpoint: "posts?populate=featuredImage&populate=categories",
-    query: {"pagination[limit]": "100" },
-    wrappedByKey: "data",
-  });
+const { category: slug } = Astro.params;
 
-  const byCategory = new Map<string, Post[]>();
-  for (const p of posts) {
-    for (const c of p.categories ?? []) {
-      const arr = byCategory.get(c.Name) ?? [];
-      arr.push(p);
-      byCategory.set(c.Name, arr);
-    }
-  }
+// Resolve category by matching slug against slugify(Name). For larger datasets,
+// prefer a real slug field in Strapi and filter by it directly.
+const categories = await fetchApi<Category[]>({
+  endpoint: "categories",
+  query: { "pagination[limit]": "100" },
+  wrappedByKey: "data",
+});
 
-  return Array.from(byCategory.entries()).map(([name, catPosts]) => ({
-    params: { category: slugify(name) },
-    props: { name, posts: catPosts },
-  }));
+const cat = categories.find((c) => slugify(c.Name) === slug);
+
+if (!cat) {
+  return new Response(null, { status: 404, statusText: "Categoría no encontrada" });
 }
 
-const { name, posts } = Astro.props as { name: string; posts: Post[] };
+const posts = await fetchApi<Post[]>({
+  endpoint: "posts?populate=featuredImage&populate=categories",
+  query: {
+    // Filter by category id to be precise
+    [`filters[categories][id][$eq]`]: String(cat.id),
+    sort: "createdAt:desc",
+    "pagination[limit]": "100",
+  },
+  wrappedByKey: "data",
+});
 
+Astro.response.headers.set("Cache-Control", "s-maxage=300, stale-while-revalidate=86400");
+
+const name = cat.Name;
 const title = `Categoría: ${name}`;
 const description = `Artículos en la categoría ${name}`;
 ---
@@ -38,7 +44,7 @@ const description = `Artículos en la categoría ${name}`;
 <Layout title={title} description={description}>
   <main class="category">
     <h1>{title}</h1>
-    <a href="/">← Todas las categorías</a>
+  <a href="/">← Todas las categorías</a>
     {posts.length === 0 ? (
       <p>No hay artículos en esta categoría.</p>
     ) : (

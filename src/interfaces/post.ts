@@ -14,6 +14,12 @@ export interface FeaturedImage {
   id: number;
   url: string;
   alternativeText?: string;
+  formats?: {
+    thumbnail?: { url: string };
+    small?: { url: string };
+    medium?: { url: string };
+    large?: { url: string };
+  };
 }
 export interface Category {
   id: number;

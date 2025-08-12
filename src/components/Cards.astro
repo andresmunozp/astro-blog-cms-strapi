@@ -21,11 +21,14 @@ const posts: Post[] = providedPosts ?? await fetchApi<Post[]>({
 {
   posts.map((post) => {
     const { title, description, slug, publishedAt, featuredImage, categories = [] } = post
-    const { url, alternativeText } = featuredImage;
+    const { url, alternativeText, formats } = featuredImage;
+    const { thumbnail, small, medium, large } = formats;
+    const currentImage = small.url;
+    
     return (
       <article>
-        <a href={`/blog/${slug}`}>
-          <img transition:name={`img-${slug}`} src={url} alt={alternativeText} />
+          <a href={`/blog/${slug}`} aria-label={`Leer: ${title}`} title={title}>
+          <img transition:name={`img-${slug}`} src={currentImage} alt={alternativeText} />
           <div class="content">
             <h2>{title}</h2>
             <p>{description}</p>
