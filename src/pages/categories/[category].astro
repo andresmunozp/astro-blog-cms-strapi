@@ -1,0 +1,64 @@
+---
+export const prerender = true;
+import Layout from "../../layouts/Layout.astro";
+import fetchApi from "../../lib/strapi.js";
+import type Post from "../../interfaces/post";
+import { slugify } from "../../lib/utils/slugify";
+import Cards from "../../components/Cards.astro";
+
+export async function getStaticPaths() {
+  
+  const posts = await fetchApi<Post[]>({
+    endpoint: "posts?populate=featuredImage&populate=categories",
+    query: {"pagination[limit]": "100" },
+    wrappedByKey: "data",
+  });
+
+  const byCategory = new Map<string, Post[]>();
+  for (const p of posts) {
+    for (const c of p.categories ?? []) {
+      const arr = byCategory.get(c.Name) ?? [];
+      arr.push(p);
+      byCategory.set(c.Name, arr);
+    }
+  }
+
+  return Array.from(byCategory.entries()).map(([name, catPosts]) => ({
+    params: { category: slugify(name) },
+    props: { name, posts: catPosts },
+  }));
+}
+
+const { name, posts } = Astro.props as { name: string; posts: Post[] };
+
+const title = `Categoría: ${name}`;
+const description = `Artículos en la categoría ${name}`;
+---
+
+<Layout title={title} description={description}>
+  <main class="category">
+    <h1>{title}</h1>
+    <a href="/">← Todas las categorías</a>
+    {posts.length === 0 ? (
+      <p>No hay artículos en esta categoría.</p>
+    ) : (
+      <div class="grid-article">
+        <Cards posts={posts} />
+      </div>
+    )}
+  </main>
+</Layout>
+
+<style>
+  .category { 
+    max-width: 900px; 
+    margin: 0 auto; 
+    padding: 20px; 
+  }
+  .grid-article { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 16px; 
+    padding: 16px 0; 
+  }
+</style>

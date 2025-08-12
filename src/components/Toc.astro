@@ -13,10 +13,10 @@ const headings = extractedHeadings.map(({ level, text, id }) => {
 });
 ---
 
-<div class="table-of-contents">
+<aside class="table-of-contents">
   <h2>Tabla de Contenidos</h2>
   <div set:html={headings} />
-</div>
+</aside>
 
 <style>
     .table-of-contents {

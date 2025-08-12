@@ -1,0 +1,83 @@
+---
+export const prerender = true;
+import Layout from "../../layouts/Layout.astro";
+import fetchApi from "../../lib/strapi.js";
+import type Category from "../../interfaces/post";
+import { slugify } from "../../lib/utils/slugify";
+
+const title = "Categorías";
+const description = "Explora los artículos por categoría";
+
+const posts = await fetchApi<Post[]>({
+	endpoint: "posts",
+	query: {
+		populate: "categories",
+		sort: "createdAt:desc",
+		"pagination[limit]": "100",
+	},
+	wrappedByKey: "data",
+});
+
+const categoryMap = new Map<string, { category: Category; count: number }>();
+for (const post of posts) {
+	for (const cat of post.categories ?? []) {
+		const key = cat.Name;
+		const existing = categoryMap.get(key);
+		if (existing) {
+			existing.count += 1;
+		} else {
+			categoryMap.set(key, { category: cat, count: 1 });
+		}
+	}
+}
+
+const categories = Array.from(categoryMap.values())
+	.sort((a, b) => a.category.Name.localeCompare(b.category.Name));
+---
+
+<Layout title={title} description={description}>
+	<main class="categories">
+		<h1>{title}</h1>
+		<ul>
+			{categories.map(({ category, count }) => (
+				<li>
+					<a href={`/categories/${slugify(category.Name)}`}>{category.Name}</a>
+					<span class="count">{count}</span>
+				</li>
+			))}
+		</ul>
+	</main>
+</Layout>
+
+<style>
+	.categories {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 20px;
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 12px;
+	}
+
+	li {
+		display: flex;
+		justify-content: space-between;
+		background: rgba(42, 42, 42, 0.2);
+		border-radius: 8px;
+		padding: 12px 16px;
+	}
+
+	a {
+		text-decoration: none;
+		color: #09f;
+	}
+
+	.count {
+		color: #aaa;
+	}
+</style>

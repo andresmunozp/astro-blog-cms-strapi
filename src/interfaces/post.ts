@@ -8,9 +8,15 @@ export default interface Post {
   updatedAt: string;
   publishedAt: string;
   featuredImage: FeaturedImage;
+  categories?: Category[];
 }
 export interface FeaturedImage {
   id: number;
   url: string;
   alternativeText?: string;
+}
+export interface Category {
+  id: number;
+  documentId?: string;
+  Name: string; // Strapi field name as provided
 }

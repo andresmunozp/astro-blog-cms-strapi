@@ -1,9 +1,16 @@
 ---
 import fetchApi from "../lib/strapi.js";
+import Categories from "./Categories.astro";
 import type Post from "../interfaces/post.js";
 
-const posts = await fetchApi<Post[]>({
-  endpoint: "posts?populate=featuredImage",
+interface Props {
+  posts?: Post[];
+}
+
+const { posts: providedPosts } = Astro.props as Partial<Props>;
+
+const posts: Post[] = providedPosts ?? await fetchApi<Post[]>({
+  endpoint: "posts?populate=featuredImage&populate=categories",
   query: {
     sort: "createdAt:desc",
     "pagination[limit]": "6",
@@ -11,14 +18,13 @@ const posts = await fetchApi<Post[]>({
   wrappedByKey: "data"
 });
 ---
-
 {
   posts.map((post) => {
-    const { title, description, slug, publishedAt, featuredImage } = post
+    const { title, description, slug, publishedAt, featuredImage, categories = [] } = post
     const { url, alternativeText } = featuredImage;
     return (
       <article>
-        <a href={`blog/${slug}`}>
+        <a href={`/blog/${slug}`}>
           <img transition:name={`img-${slug}`} src={url} alt={alternativeText} />
           <div class="content">
             <h2>{title}</h2>
@@ -26,6 +32,7 @@ const posts = await fetchApi<Post[]>({
             <time datetime={publishedAt}>
               {new Date(publishedAt).toLocaleDateString()}
             </time>
+            <Categories categories={categories} variant="badges" />
           </div>
         </a>
       </article>

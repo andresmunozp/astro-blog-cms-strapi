@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { marked } from "marked";
 import type Post from "../../interfaces/post";
+import Categories from "../../components/Categories.astro";
 import Layout from "../../layouts/Layout.astro";
 import fetchApi from "../../lib/strapi.js";
 import { processContent } from "../../lib/utils/prepareContentForTOC";
@@ -11,7 +12,7 @@ import Toc from "../../components/Toc.astro";
 const { slug } = Astro.params;
 
 const post = await fetchApi<Post>({
-  endpoint: `posts?filters[slug]=${slug}&populate=featuredImage`,
+  endpoint: `posts?filters[slug]=${slug}&populate=featuredImage&populate=categories`,
   wrappedByKey: "data",
   wrappedByList: true,
 });
@@ -23,7 +24,7 @@ if (!post) {
   });
 }
 
-const { title, content, description, publishedAt, featuredImage } = post;
+const { title, content, description, publishedAt, featuredImage, categories = [] } = post;
 const { url, alternativeText } = featuredImage;
 
 const postContent = await marked.parse(content);
@@ -32,7 +33,7 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
 
 <Layout title={title} description={description}>
 
-  <div class="post-header">
+  <header class="post-header">
 
     <div class="title-container">
         <a href="/">Volver</a>
@@ -56,10 +57,11 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
         <time datetime={publishedAt}>
           {new Date(publishedAt).toLocaleDateString()}
         </time>
+        <Categories categories={categories} variant="badges" />
       </div>
     </div>
 
-  </div>
+  </header>
 
   <main>
     <article class="content">
@@ -107,6 +109,8 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
     box-sizing: border-box;
     flex: 1;
   }
+
+  .description-data :global(.badges) { margin-top: 8px; }
 
   /* Estilos para el contenido del post */
   :global(.post-content p),
